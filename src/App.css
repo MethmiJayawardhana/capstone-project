@@ -1,38 +1,56 @@
-.App {
-  text-align: center;
+:root {
+  /* Brand Color Palette */
+  --color-primary-green: #495E57;
+  --color-primary-yellow: #F4CE14;
+  --color-secondary-peach: #EE9972;
+  --color-secondary-light-peach: #FBDABB;
+  --color-highlight-light: #EDEFEE;
+  --color-highlight-dark: #333333;
+
+  /* Typography */
+  --font-display: 'Markazi Text', serif;
+  --font-body: 'Karla', sans-serif;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+body {
+  font-family: var(--font-body);
+  color: var(--color-highlight-dark);
+  background-color: #ffffff;
+  line-height: 1.5;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+/* Base Typography Styles */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
 }
 
-.App-link {
-  color: #61dafb;
+/* Button Component Styles */
+.btn-primary {
+  background-color: var(--color-primary-yellow);
+  color: var(--color-highlight-dark);
+  border: none;
+  border-radius: 16px;
+  padding: 12px 24px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.btn-primary:hover {
+  background-color: #e0bd0f;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
