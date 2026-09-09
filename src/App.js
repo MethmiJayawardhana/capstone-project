@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useReducer } from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Star, UtensilsCrossed } from 'lucide-react';
+import BookingForm from './BookingForm';
 import './App.css';
 
 // Animation variants for Framer Motion
@@ -17,7 +18,26 @@ const staggerContainer = {
   }
 };
 
+// API Helper Functions for Reservation State
+export const initializeTimes = () => {
+  const today = new Date();
+  return typeof fetchAPI !== "undefined" ? fetchAPI(today) : ["17:00", "18:00", "19:00", "20:00"];
+};
+
+export const updateTimes = (state, action) => {
+  switch (action.type) {
+    case "UPDATE_TIMES": {
+      const selectedDate = new Date(action.payload);
+      return typeof fetchAPI !== "undefined" ? fetchAPI(selectedDate) : state;
+    }
+    default:
+      return state;
+  }
+};
+
 export default function App() {
+  const [availableTimes, dispatch] = useReducer(updateTimes, [], initializeTimes);
+
   return (
     <div className="little-lemon-app">
       {/* 1. NAVIGATION BAR */}
@@ -49,9 +69,11 @@ export default function App() {
             <p style={{ fontSize: '18px', maxWidth: '400px', marginBottom: '24px', color: '#EDEFEE' }}>
               We are a family owned Mediterranean restaurant, focused on traditional recipes served with a modern twist.
             </p>
-            <motion.button className="btn-primary" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              Reserve a Table
-            </motion.button>
+            <a href="#reservations">
+              <motion.button className="btn-primary" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                Reserve a Table
+              </motion.button>
+            </a>
           </motion.div>
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }} 
@@ -151,7 +173,15 @@ export default function App() {
         </div>
       </section>
 
-      {/* 4. TESTIMONIALS SECTION */}
+      {/* 4. RESERVATION SECTION */}
+      <section id="reservations" style={{ padding: '60px 0', backgroundColor: '#f9f9f9' }}>
+        <div className="container">
+          <h2 style={{ textAlign: 'center', fontSize: '36px', marginBottom: '30px', color: 'var(--color-primary-green)' }}>Reserve a Table</h2>
+          <BookingForm availableTimes={availableTimes} dispatch={dispatch} />
+        </div>
+      </section>
+
+      {/* 5. TESTIMONIALS SECTION */}
       <section style={{ backgroundColor: 'var(--color-highlight-light)', padding: '60px 0' }}>
         <div className="container">
           <h2 style={{ textAlign: 'center', fontSize: '36px', marginBottom: '40px' }}>Testimonials</h2>
@@ -187,7 +217,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* 5. ABOUT SECTION */}
+      {/* 6. ABOUT SECTION */}
       <section id="about" style={{ padding: '60px 0' }}>
         <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', alignItems: 'center' }}>
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}>
@@ -212,7 +242,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* 6. FOOTER */}
+      {/* 7. FOOTER */}
       <footer style={{ backgroundColor: 'var(--color-primary-green)', color: '#ffffff', padding: '40px 0' }}>
         <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '20px' }}>
           <div>
