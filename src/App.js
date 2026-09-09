@@ -1,7 +1,9 @@
 import React, { useReducer } from 'react';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Star, UtensilsCrossed } from 'lucide-react';
 import BookingForm from './BookingForm';
+import ConfirmedBooking from './ConfirmedBooking';
 import './App.css';
 
 // Animation variants for Framer Motion
@@ -21,23 +23,26 @@ const staggerContainer = {
 // API Helper Functions for Reservation State
 export const initializeTimes = () => {
   const today = new Date();
-  return typeof fetchAPI !== "undefined" ? fetchAPI(today) : ["17:00", "18:00", "19:00", "20:00"];
+  return typeof window.fetchAPI !== "undefined" 
+    ? window.fetchAPI(today) 
+    : ["17:00", "18:00", "19:00", "20:00"];
 };
 
 export const updateTimes = (state, action) => {
   switch (action.type) {
     case "UPDATE_TIMES": {
       const selectedDate = new Date(action.payload);
-      return typeof fetchAPI !== "undefined" ? fetchAPI(selectedDate) : state;
+      return typeof window.fetchAPI !== "undefined" 
+        ? window.fetchAPI(selectedDate) 
+        : state;
     }
     default:
       return state;
   }
 };
 
-export default function App() {
-  const [availableTimes, dispatch] = useReducer(updateTimes, [], initializeTimes);
-
+// Main Content Component with Navigation & Sections
+function MainContent({ availableTimes, dispatch, submitForm }) {
   return (
     <div className="little-lemon-app">
       {/* 1. NAVIGATION BAR */}
@@ -174,10 +179,10 @@ export default function App() {
       </section>
 
       {/* 4. RESERVATION SECTION */}
-      <section id="reservations" style={{ padding: '60px 0', backgroundColor: '#f9f9f9' }}>
+      <section id="reservations" style={{ padding: '30px 0', backgroundColor: '#f9f9f9' }}>
         <div className="container">
           <h2 style={{ textAlign: 'center', fontSize: '36px', marginBottom: '30px', color: 'var(--color-primary-green)' }}>Reserve a Table</h2>
-          <BookingForm availableTimes={availableTimes} dispatch={dispatch} />
+          <BookingForm availableTimes={availableTimes} dispatch={dispatch} submitForm={submitForm} />
         </div>
       </section>
 
@@ -270,5 +275,47 @@ export default function App() {
         </div>
       </footer>
     </div>
+  );
+}
+
+// Router Container Component
+function MainApp() {
+  const [availableTimes, dispatch] = useReducer(updateTimes, [], initializeTimes);
+  const navigate = useNavigate();
+
+  // Step 2: Form submission function saving to localStorage & calling submitAPI
+  const submitForm = (formData) => {
+    const isSubmitted = typeof window.submitAPI !== "undefined" 
+      ? window.submitAPI(formData) 
+      : true;
+
+    if (isSubmitted) {
+      localStorage.setItem("bookingData", JSON.stringify(formData));
+      navigate('/booking-confirmed');
+    }
+  };
+
+  return (
+    <Routes>
+      <Route 
+        path="/" 
+        element={
+          <MainContent 
+            availableTimes={availableTimes} 
+            dispatch={dispatch} 
+            submitForm={submitForm} 
+          />
+        } 
+      />
+      <Route path="/booking-confirmed" element={<ConfirmedBooking />} />
+    </Routes>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <MainApp />
+    </BrowserRouter>
   );
 }
